@@ -1,0 +1,326 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+    <title>Grid Lock Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f0f0f0;
+            color: #333;
+            font-family: 'Roboto', sans-serif;
+            padding: 0px;
+            text-align: center;
+            margin: 0;
+        }
+        .quiz-container {
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.1);
+            max-width: 700px;
+            margin: 20px auto 0; /* Added top margin for navigation */
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            position: relative;
+        }
+        .navigation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .nav-button {
+            background-color: #a8b7b5;
+            color: white;
+            border: none;
+            border-radius: 20%;
+            font-size: 5px;
+            padding: 0;
+            width: 12px;
+            height: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .nav-button:hover {
+            background-color: #0056b3;
+        }
+        .nav-button.active {
+            background-color: #80abff;
+        }
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .question {
+            margin: 10px 0px;
+            font-weight: bold;
+            font-size: 1.2em;
+            text-align: left;
+            scroll-margin-top: 40px; /* Added to account for fixed navigation */
+        }
+        .option {
+            background-color: #f9f9f9;
+            border: 2px solid #ddd;
+            padding: 10px;
+            font-size: 16px;
+            color: #333;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 1px 0;
+            text-align: left;
+            transition: background-color 0.2s ease;
+            width: 100%;
+        }
+        .option:hover {
+            background-color: #e6e6e6;
+        }
+        .option.correct {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .option.incorrect {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navigation" id="nav-buttons">
+    <!-- Navigation buttons will be injected here -->
+</div>
+
+<div class="quiz-container">
+    <div id="quiz">
+        <!-- Quiz content will be injected here -->
+    </div>
+</div>
+
+<script>
+    const quizData = [
+        {
+            question: "What does grid lock do?<br>It locks your mouse cursor movement for _______ so it can only go from dot to dot on the grid.",
+            options: [
+                "Accuracy",
+                "Speed",
+                "Creativity"
+            ],
+            correct: 0
+        },
+        {
+            question: "What is the distance between dots?<br>It is _______ by default. You can change it by double-clicking the dotdotdot button on the _______ menu.",
+            options: [
+                "1cm, Right",
+                "2cm, Right",
+                "1cm, Left"
+            ],
+            correct: 0
+        },
+        {
+            question: "How to draw accurately a rectangle or a circle or a square or a line using the rel x y inputs?<br> Click on canvas a start position, then enter the _______ x and y values of the end position in those boxes on the ______ toolbar.",
+            options: [
+                "Relative, top",
+                "Absolute, bottom",
+                "Real, right"
+            ],
+            correct: 0
+        },
+        {
+            question: "How to convert an online image into vector shapes?<br> You copy and paste(ctrl v) it onto the canvas, select vector tool(next to the _______), then click on the ________, choose your conversion settings, then click OK _______.",
+            options: [
+                "Rubber, Image, Twice",
+                "3 dots, Canvas, Once",
+                "Pencil, Menu, Thrice"
+            ],
+            correct: 0
+        },
+        {
+            question: "How to use the conversion settings?<br> You can slide the _______ value to keep more or less colours of the image.",
+            options: [
+                "Luminance",
+                "Brightness",
+                "Contrast"
+            ],
+            correct: 0
+        },
+        {
+            question: "How to use the conversion settings?<br> You can select or deselect specific colours in _______.",
+            options: [
+                "Checkboxes",
+                "Dropdowns",
+                "Textboxes"
+            ],
+            correct: 0
+        },
+        {
+            question: "How to use the conversion settings?<br> You can go to _______ mode so it becomes just shapes in black colour.",
+            options: [
+                "Monochrome",
+                "Gradient",
+                "Colourful"
+            ],
+            correct: 0
+        },
+        {
+            question: "How to turn the vector shapes into lines ready for laser cut/engraving?<br> Select the shapes and click 'Fill' in top toolbar, choose _______.",
+            options: [
+                "No Fill",
+                "Full Colour",
+                "Grayscale"
+            ],
+            correct: 0
+        },
+        {
+            question: "How to turn the vector shapes into lines ready for laser cut/engraving?<br> Change line colour to red for _______ or black for _______.",
+            options: [
+                "Engraving, Laser Cut",
+                "Drawing, Printing",
+                "Shading, Cutting"
+            ],
+            correct: 0
+        },
+        {
+            question: "How to turn the vector shapes into lines ready for laser cut/engraving?<br> Remove _____ of lines with 'delete segment tool'.",
+            options: [
+                "segments",
+                "groups",
+                "colours"
+            ],
+            correct: 0
+        },
+        {
+            question: "How to turn the vector shapes into lines ready for laser cut/engraving?<br> _______ to explode the vector group to edit separate shapes. _______ to group them for easy move around on canvas.",
+            options: [
+                "Ctrl E, Ctrl G",
+                "Ctrl G, Ctrl E",
+                "Ctrl C, Ctrl V"
+            ],
+            correct: 0
+        }
+    ];
+
+    let currentQuestion = 0;
+    const quiz = document.getElementById('quiz');
+    const navButtons = document.getElementById('nav-buttons');
+
+    function createNavigationButtons() {
+        quizData.forEach((_, index) => {
+            const button = document.createElement('button');
+            button.className = 'nav-button';
+            button.textContent = index + 1;
+            button.onclick = () => scrollToQuestion(index);
+            navButtons.appendChild(button);
+        });
+    }
+
+    function scrollToQuestion(index) {
+        const questionElement = document.getElementById(`question-${index}`);
+        if (questionElement) {
+            questionElement.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    function updateNavigationHighlight() {
+        const buttons = document.getElementsByClassName('nav-button');
+        const questions = document.getElementsByClassName('question');
+        const scrollPosition = window.scrollY + 100; // Offset for fixed header
+
+        Array.from(questions).forEach((question, index) => {
+            const questionTop = question.offsetTop;
+            const questionBottom = questionTop + question.offsetHeight;
+            
+            if (scrollPosition >= questionTop && scrollPosition < questionBottom) {
+                buttons[index].classList.add('active');
+            } else {
+                buttons[index].classList.remove('active');
+            }
+        });
+    }
+
+    function loadAllQuestions() {
+        quiz.innerHTML = quizData.map((questionData, questionIndex) => {
+            const [boldPart, regularPart] = questionData.question.split('<br>');
+            
+            const options = questionData.options.map((option, index) => {
+                return {
+                    text: option,
+                    index: index
+                };
+            });
+            
+            options.sort(() => Math.random() - 0.5);
+            questionData.shuffledOptions = options;
+            
+            return `
+                <div id="question-${questionIndex}" class="question" style="margin-bottom: 40px;">
+                    <p><strong style="font-size: 1.3em">${boldPart}</strong><br>${regularPart}</p>
+                    ${options.map((optionObj, index) => `
+                        <button class="option" 
+                                onclick="selectOption(${questionIndex}, ${index})"
+                                ${questionData.answered ? 'disabled' : ''}
+                        >${optionObj.text}</button>
+                    `).join('')}
+                </div><br><br>
+            `;
+        }).join('');
+    }
+
+    function selectOption(questionIndex, selectedOptionIndex) {
+        const questionData = quizData[questionIndex];
+        if (questionData.answered) return;
+        
+        questionData.answered = true;
+        
+        const questionElement = document.getElementById(`question-${questionIndex}`);
+        const options = questionElement.getElementsByClassName('option');
+        const correctOptionIndex = questionData.shuffledOptions.findIndex(optionObj => optionObj.index === questionData.correct);
+        
+        for (let i = 0; i < options.length; i++) {
+            options[i].disabled = true;
+            if (i === correctOptionIndex) {
+                options[i].classList.add('correct');
+            }
+        }
+        
+        
+
+        // Update navigation button style for completed question
+        const navButtons = document.getElementsByClassName('nav-button');
+        navButtons[questionIndex].style.backgroundColor = '#58d785';
+        if (selectedOptionIndex !== correctOptionIndex) {
+            options[selectedOptionIndex].classList.add('incorrect');
+            navButtons[questionIndex].style.backgroundColor = '#ff9999'; // Light red for wrong answer
+        } 
+        setTimeout(() => {
+            const nextQuestionElement = document.getElementById(`question-${questionIndex + 1}`);
+            if (nextQuestionElement) {
+                nextQuestionElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                quiz.insertAdjacentHTML('beforeend', '<h2 style="text-align: center; margin-top: 20px;">🎉 Quiz Completed! 🎉</h2>');
+            }
+        }, 500);
+    }
+
+    // Initialize quiz
+    loadAllQuestions();
+    createNavigationButtons();
+
+    // Add scroll event listener for navigation highlight
+    window.addEventListener('scroll', updateNavigationHighlight);
+    // Initial highlight update
+    updateNavigationHighlight();
+</script>
+
+</body>
+</html>
